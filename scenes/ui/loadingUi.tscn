@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://t24o6buvahlb"]
+
+[ext_resource type="Texture2D" uid="uid://b6coslynunakn" path="res://assets/ceiling.png" id="1_4c2wp"]
+[ext_resource type="Script" uid="uid://c3bvi0dprj6ov" path="res://scenes/ui/spinnyLoading.gd" id="1_otqcv"]
+
+[node name="loadingUI" type="Control" unique_id=1820623172]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_otqcv")
+
+[node name="SpinnerIcon" type="TextureRect" parent="." unique_id=710444091]
+layout_mode = 0
+offset_left = 599.0
+offset_top = 289.0
+offset_right = 1150.0
+offset_bottom = 645.0
+texture = ExtResource("1_4c2wp")

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="dodge the ceilings"
-run/main_scene="uid://dww36epu8206a"
+run/main_scene="uid://c07miml7xgh6v"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
