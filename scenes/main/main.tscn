@@ -1,19 +1,27 @@
 [gd_scene format=3 uid="uid://dww36epu8206a"]
 
 [ext_resource type="Shader" uid="uid://d3plljpilf7hr" path="res://scenes/main/sky.gdshader" id="1_hyk8p"]
+[ext_resource type="PackedScene" uid="uid://8pjjamqyyyhm" path="res://scenes/ceiling/ceiling.tscn" id="2_iuonh"]
+[ext_resource type="PackedScene" uid="uid://cmig4sksgmvub" path="res://scenes/map/map.tscn" id="3_k2fmo"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_iuonh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k2fmo"]
 shader = ExtResource("1_hyk8p")
 shader_parameter/background_dark = false
 
-[sub_resource type="Sky" id="Sky_k2fmo"]
-sky_material = SubResource("ShaderMaterial_iuonh")
+[sub_resource type="Sky" id="Sky_l3cfh"]
+sky_material = SubResource("ShaderMaterial_k2fmo")
 
 [sub_resource type="Environment" id="Environment_l3cfh"]
 background_mode = 2
-sky = SubResource("Sky_k2fmo")
+background_color = Color(1, 1, 1, 1)
+sky = SubResource("Sky_l3cfh")
 
 [node name="Main" type="Node3D" unique_id=897972912]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1689994723]
 environment = SubResource("Environment_l3cfh")
+
+[node name="CEILING" parent="." unique_id=506416017 instance=ExtResource("2_iuonh")]
+transform = Transform3D(0.6938984, 0, 0, 0, 0.8433627, 0, 0, 0, 0.7065377, 0, 2.9859788, 0)
+
+[node name="Map" parent="." unique_id=1687480935 instance=ExtResource("3_k2fmo")]

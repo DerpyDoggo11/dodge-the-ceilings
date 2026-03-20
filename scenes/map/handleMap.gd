@@ -1,25 +1,60 @@
 extends Node3D
 
 @export var tileInstance: PackedScene
-@export var mapSize = 5
+@export var mapSize = 20
 @export var spacing = 2
+@export var fallSpeed = 3.0
+@export var spawnHeight = 10.0
+@export var emptySlotCount = 40
 
-@onready var bottomTiles = $BottomTiles 
+@onready var bottomTiles = $BottomTiles
+
+var fallingGrids = []
+var timer = 0.0
 
 func _ready() -> void:
-	spawnTileGrid(0, 0, bottomTiles) # base map
+	spawnTileGrid(0, 0, bottomTiles)
 
 func spawnTileGrid(yLevel: int, emptySlots: int, parent: Node3D):
 	var offset = (mapSize - 1) * spacing * 0.5
+	
+	var allPositions = []
 	for row in range(mapSize):
-		for column in range (mapSize):
+		for column in range(mapSize):
+			allPositions.append(Vector2i(row, column))
+	allPositions.shuffle()
+	var emptySet = {}
+	for i in range(min(emptySlots, allPositions.size())):
+		emptySet[allPositions[i]] = true
+
+	for row in range(mapSize):
+		for column in range(mapSize):
+			if emptySet.get(Vector2i(row, column), false):
+				continue
 			var instance = tileInstance.instantiate()
 			parent.add_child(instance)
-			instance.position = Vector3(mapSize * spacing - offset, 0.0, mapSize * spacing - offset)
+			instance.position = Vector3(row * spacing - offset, yLevel, column * spacing - offset)
+
+func spawnFallingGrid():
+	var fallingParent = Node3D.new()
+	add_child(fallingParent)
+	fallingParent.position.y = spawnHeight
+	spawnTileGrid(0, emptySlotCount, fallingParent)
+	fallingGrids.append(fallingParent)
 
 func removeTiles(parent: Node3D):
-	for child in bottomTiles.get_children():
+	for child in parent.get_children():
 		child.queue_free()
 
 func _process(delta: float) -> void:
-	pass
+	timer += delta
+	if timer >= 5.0:
+		timer = 0.0
+		spawnFallingGrid()
+
+	for grid in fallingGrids.duplicate():
+		grid.position.y -= fallSpeed * delta
+		if grid.position.y <= 0.0:
+			grid.position.y = 0.0
+			grid.queue_free()
+			fallingGrids.erase(grid)

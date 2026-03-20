@@ -1,15 +1,14 @@
 shader_type sky;
-
 uniform bool background_dark = false;
 
 vec3 skybox_dark_srgb(vec3 dir) {
     vec3 rgb = dir * 0.5 + vec3(0.5);
-    return vec3(0.05) + 0.20 * rgb;
+    return vec3(0.05, 0.05, 0.12) + 0.20 * rgb * vec3(0.8, 0.9, 1.2);
 }
 
 vec3 skybox_light_srgb(vec3 dir) {
     vec3 rgb = dir * 0.5 + vec3(0.5);
-    return vec3(0.7) + 0.20 * rgb;
+    return vec3(0.55, 0.65, 0.85) + 0.20 * rgb * vec3(0.8, 0.95, 1.2);
 }
 
 float interleaved_gradient_noise(vec2 n) {
@@ -24,11 +23,11 @@ vec3 dither_interleaved(vec3 rgb, float levels, vec4 frag_coord) {
 }
 
 vec3 linear_from_srgb(vec3 color) {
-	return mix(
-		pow((color.rgb + vec3(0.055)) * (1.0 / (1.0 + 0.055)), vec3(2.4)),
-		color.rgb * (1.0 / 12.92),
-		lessThan(color.rgb, vec3(0.04045))
-	);
+    return mix(
+        pow((color.rgb + vec3(0.055)) * (1.0 / (1.0 + 0.055)), vec3(2.4)),
+        color.rgb * (1.0 / 12.92),
+        lessThan(color.rgb, vec3(0.04045))
+    );
 }
 
 void sky() {
@@ -38,9 +37,6 @@ void sky() {
     } else {
         rgb = skybox_light_srgb(EYEDIR);
     }
-
     vec3 rgb_gamma_dithered = dither_interleaved(rgb, 256.0, FRAGCOORD);
-
     COLOR = linear_from_srgb(rgb_gamma_dithered);
-    // COLOR = linear_from_srgb(rgb); // Without dithering
 }

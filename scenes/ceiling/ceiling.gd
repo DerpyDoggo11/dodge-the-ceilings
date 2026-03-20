@@ -4,22 +4,99 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed = 5
 var jump_speed = 5
 var mouse_sensitivity = 0.002
+const FIRST_PERSON_LENGTH = 0.0
+const THIRD_PERSON_LENGTH = 3.5
+const ZOOM_SPEED = 10.0
 
-@onready var camera = $Camera3D
+const DASH_SPEED = 20.0
+const DASH_DURATION = 0.25
+const DASH_COOLDOWN = 1.0
+const NORMAL_HEIGHT = 1.0
+const DASH_HEIGHT = 0.5
+var dash_timer = 0.0
+var dash_cooldown_timer = 0.0
+var is_dashing = false
+var dash_direction = Vector3.ZERO
+
+var camera_yaw = 0.0
+var camera_pitch = 0.0
+
+@onready var cameraPivot = $CameraPivot
+@onready var springArm = $CameraPivot/SpringArm3D
+@onready var camera = $CameraPivot/SpringArm3D/Camera3D
+@onready var playerMesh = $Mesh
+@onready var collider = $CollisionShape3D 
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	camera_yaw = rotation.y
 
 func _physics_process(delta):
 	velocity.y += -gravity * delta
-	var input = Input.get_vector("left", "right", "forward", "back")
-	var movement_dir = transform.basis * Vector3(input.x, 0, input.y)
-	velocity.x = movement_dir.x * speed
-	velocity.z = movement_dir.z * speed
 
+	if dash_cooldown_timer > 0.0:
+		dash_cooldown_timer -= delta
+	if is_dashing:
+		dash_timer -= delta
+		if dash_timer <= 0.0:
+			is_dashing = false
+
+	var input = Input.get_vector("left", "right", "forward", "back")
+	var cam_basis = cameraPivot.global_transform.basis
+	var forward = Vector3(cam_basis.z.x, 0, cam_basis.z.z).normalized()
+	var right = Vector3(cam_basis.x.x, 0, cam_basis.x.z).normalized()
+	var movement_dir = (-forward * -input.y + right * input.x)
+
+	if is_dashing:
+		velocity.x = dash_direction.x * DASH_SPEED
+		velocity.z = dash_direction.z * DASH_SPEED
+	else:
+		velocity.x = movement_dir.x * speed
+		velocity.z = movement_dir.z * speed
+		
 	move_and_slide()
+
+	if velocity.length() > 0.1:
+		var target_angle = atan2(velocity.x, velocity.z)
+		playerMesh.rotation.y = lerp_angle(playerMesh.rotation.y, target_angle, delta * 10.0)
+
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_speed
+	
+	if Input.is_action_just_pressed("dash") and dash_cooldown_timer <= 0.0:
+		dash_direction = movement_dir if movement_dir.length() > 0.1 else -forward
+		dash_direction = dash_direction.normalized()
+		is_dashing = true
+		dash_timer = DASH_DURATION
+		dash_cooldown_timer = DASH_COOLDOWN
+	
+	var target_height = DASH_HEIGHT if is_dashing else NORMAL_HEIGHT
+	var current_height = lerp(playerMesh.scale.y, target_height, delta * 15.0)
+	playerMesh.scale.y = current_height
+
+	if collider.shape is CapsuleShape3D:
+		collider.shape.height = lerp(collider.shape.height, target_height * 2.0, delta * 15.0)
+
+	var target_length = THIRD_PERSON_LENGTH if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) else FIRST_PERSON_LENGTH
+	springArm.spring_length = lerp(springArm.spring_length, target_length, delta * ZOOM_SPEED)
+
+	var isThirdPerson = springArm.spring_length > 0.2
+	playerMesh.visible = isThirdPerson
+
 
 func _input(event):
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-		camera.rotate_x(-event.relative.y * mouse_sensitivity)
-		camera.rotation.x = clampf(camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+	if event.is_action_pressed("exit"):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	elif event is InputEventMouseButton and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		var isThirdPerson = springArm.spring_length > 0.2
+		camera_yaw   -= event.relative.x * mouse_sensitivity
+		camera_pitch -= event.relative.y * mouse_sensitivity
+		camera_pitch  = clampf(camera_pitch, -deg_to_rad(70), deg_to_rad(70))
+
+		if isThirdPerson:
+			cameraPivot.rotation = Vector3(camera_pitch, camera_yaw - rotation.y, 0.0)
+		else:
+			rotation.y = camera_yaw
+			cameraPivot.rotation = Vector3(camera_pitch, 0.0, 0.0)
