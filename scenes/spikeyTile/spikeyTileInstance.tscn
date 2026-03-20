@@ -46,7 +46,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_3valc")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_k21ud"]
-size = Vector3(1.9516602, 0.88464355, 1.9506226)
+size = Vector3(1.8248901, 0.30327606, 1.8090057)
 
 [node name="spikeyTileInstance" type="StaticBody3D" unique_id=177087531]
 script = ExtResource("1_gpjsx")
@@ -60,7 +60,7 @@ mesh = SubResource("ArrayMesh_gpjsx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00048828125, -0.027893066, 0.002380371)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=914606676]
-transform = Transform3D(0.9302784, 0, 0, 0, 1, 0, 0, 0, 0.952323, 0.028389845, 0, 0.022058507)
+transform = Transform3D(0.9302784, 0, 0, 0, 2.1788144, 0, 0, 0, 0.952323, -0.016324159, 0.11443411, 0.0015185196)
 shape = SubResource("BoxShape3D_k21ud")
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

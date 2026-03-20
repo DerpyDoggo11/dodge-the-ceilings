@@ -32,6 +32,10 @@ func _ready():
 	camera_yaw = rotation.y
 
 func _physics_process(delta):
+	
+	if Globals.started == false:
+		return
+	
 	velocity.y += -gravity * delta
 
 	if dash_cooldown_timer > 0.0:
@@ -85,6 +89,9 @@ func _physics_process(delta):
 
 
 func _input(event):
+	if Globals.started == false:
+		return
+		
 	if event.is_action_pressed("exit"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
@@ -93,15 +100,19 @@ func _input(event):
 		var isThirdPerson = springArm.spring_length > 0.2
 		camera_yaw   -= event.relative.x * mouse_sensitivity
 		camera_pitch -= event.relative.y * mouse_sensitivity
-		camera_pitch  = clampf(camera_pitch, -deg_to_rad(70), deg_to_rad(70))
+		camera_pitch  = clampf(camera_pitch, -deg_to_rad(90), deg_to_rad(90))
 
 		if isThirdPerson:
 			cameraPivot.rotation = Vector3(camera_pitch, camera_yaw - rotation.y, 0.0)
 		else:
 			rotation.y = camera_yaw
 			cameraPivot.rotation = Vector3(camera_pitch, 0.0, 0.0)
-			
+
+
 func die():
+	if Globals.started == false:
+		return
+		
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var tree = get_tree()
 	Globals.started = false
@@ -112,24 +123,30 @@ func die():
 
 	var overlay = ColorRect.new()
 	overlay.color = Color(0, 0, 0, 0)
-	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	overlay.size = get_viewport().get_visible_rect().size
+	get_viewport().size_changed.connect(func():
+		overlay.size = get_viewport().get_visible_rect().size
+	)
 	canvas.add_child(overlay)
+
+	var deathCanvas = CanvasLayer.new()
+	deathCanvas.layer = 129
+	tree.root.add_child(deathCanvas)
 
 	var deathScene = preload("res://scenes/ui/deathUi.tscn").instantiate()
 	deathScene.modulate.a = 0.0
-	canvas.add_child(deathScene)
+	deathCanvas.add_child(deathScene)
 
-	var tween = tree.create_tween()
-	tween.tween_property(overlay, "color:a", 1.0, 0.5)
-	tween.tween_property(deathScene, "modulate:a", 1.0, 1.0)
-	tween.tween_interval(3.5)
-	tween.tween_property(deathScene, "modulate:a", 0.0, 1.0)
-	tween.tween_interval(0.2)
+	var tween = canvas.create_tween()
+	tween.tween_property(overlay, "color:a", 1.0, 2) 
+	tween.tween_interval(0.5)
 	tween.tween_callback(func():
+		deathCanvas.queue_free()   
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		tree.change_scene_to_file("res://scenes/ui/playUi.tscn")
 	)
-	
-	tween.tween_interval(0.3)        
-	tween.tween_property(overlay, "color:a", 0.0, 0.5)
+	tween.tween_interval(0.4) 
+	tween.tween_property(overlay, "color:a", 0.0, 0.5) 
 	tween.tween_callback(canvas.queue_free)

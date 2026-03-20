@@ -3,10 +3,12 @@
 [ext_resource type="FontFile" uid="uid://rdlh2dallwka" path="res://assets/fonts/titleFont.ttf" id="1_ko5pc"]
 
 [node name="DeathUI" type="Control" unique_id=1259036080]
+z_index = 10
 layout_mode = 3
 anchors_preset = 0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1785244772]
+layer = 5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=847486599]
 anchors_preset = 15
