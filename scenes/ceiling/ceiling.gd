@@ -100,3 +100,36 @@ func _input(event):
 		else:
 			rotation.y = camera_yaw
 			cameraPivot.rotation = Vector3(camera_pitch, 0.0, 0.0)
+			
+func die():
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var tree = get_tree()
+	Globals.started = false
+
+	var canvas = CanvasLayer.new()
+	canvas.layer = 128
+	tree.root.add_child(canvas)
+
+	var overlay = ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(overlay)
+
+	var deathScene = preload("res://scenes/ui/deathUi.tscn").instantiate()
+	deathScene.modulate.a = 0.0
+	canvas.add_child(deathScene)
+
+	var tween = tree.create_tween()
+	tween.tween_property(overlay, "color:a", 1.0, 0.5)
+	tween.tween_property(deathScene, "modulate:a", 1.0, 1.0)
+	tween.tween_interval(3.5)
+	tween.tween_property(deathScene, "modulate:a", 0.0, 1.0)
+	tween.tween_interval(0.2)
+	tween.tween_callback(func():
+		tree.change_scene_to_file("res://scenes/ui/playUi.tscn")
+	)
+	
+	tween.tween_interval(0.3)        
+	tween.tween_property(overlay, "color:a", 0.0, 0.5)
+	tween.tween_callback(canvas.queue_free)

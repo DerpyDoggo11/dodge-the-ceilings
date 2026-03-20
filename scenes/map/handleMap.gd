@@ -1,6 +1,7 @@
 extends Node3D
 
-@export var tileInstance: PackedScene
+@export var spikeyTileInstance: PackedScene
+@export var mapTileInstance: PackedScene
 @export var mapSize = 20
 @export var spacing = 2
 @export var fallSpeed = 3.0
@@ -11,11 +12,11 @@ extends Node3D
 
 var fallingGrids = []
 var timer = 0.0
-
+# TODO: Make tilemap size shrink every few seconds (remove edges from main tilemap), Make sideway/angled tiles moving to the opposite side
 func _ready() -> void:
-	spawnTileGrid(0, 0, bottomTiles)
+	spawnTileGrid(0, 0, bottomTiles, mapTileInstance)
 
-func spawnTileGrid(yLevel: int, emptySlots: int, parent: Node3D):
+func spawnTileGrid(yLevel: int, emptySlots: int, parent: Node3D, tileInstance: PackedScene):
 	var offset = (mapSize - 1) * spacing * 0.5
 	
 	var allPositions = []
@@ -39,7 +40,7 @@ func spawnFallingGrid():
 	var fallingParent = Node3D.new()
 	add_child(fallingParent)
 	fallingParent.position.y = spawnHeight
-	spawnTileGrid(0, emptySlotCount, fallingParent)
+	spawnTileGrid(0, emptySlotCount, fallingParent, spikeyTileInstance)
 	fallingGrids.append(fallingParent)
 
 func removeTiles(parent: Node3D):

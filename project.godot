@@ -13,7 +13,18 @@ config_version=5
 config/name="dodge the ceilings"
 run/main_scene="uid://c07miml7xgh6v"
 config/features=PackedStringArray("4.6", "Forward Plus")
+boot_splash/image="uid://b6coslynunakn"
 config/icon="res://icon.svg"
+
+[autoload]
+
+Globals="*uid://cb8jx8glbq1c2"
+
+[display]
+
+window/size/viewport_width=1200
+window/size/viewport_height=650
+window/stretch/mode="viewport"
 
 [editor_plugins]
 

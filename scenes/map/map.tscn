@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://cmig4sksgmvub"]
 
 [ext_resource type="Script" uid="uid://c6eknhom76vkk" path="res://scenes/map/handleMap.gd" id="1_sxf4j"]
-[ext_resource type="PackedScene" uid="uid://6f3f0ps3mumr" path="res://scenes/map/tileInstance.tscn" id="2_tqkkf"]
+[ext_resource type="PackedScene" uid="uid://ckiomsxcarb6c" path="res://scenes/spikeyTile/spikeyTileInstance.tscn" id="2_a2pkv"]
+[ext_resource type="PackedScene" uid="uid://6f3f0ps3mumr" path="res://scenes/map/mapTileInstance.tscn" id="3_ph54e"]
 
 [node name="Map" type="Node3D" unique_id=1687480935]
 script = ExtResource("1_sxf4j")
-tileInstance = ExtResource("2_tqkkf")
+spikeyTileInstance = ExtResource("2_a2pkv")
+mapTileInstance = ExtResource("3_ph54e")
 
 [node name="BottomTiles" type="Node3D" parent="." unique_id=1072073257]
