@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dww36epu8206a"]
+
+[ext_resource type="Shader" uid="uid://d3plljpilf7hr" path="res://scenes/main/sky.gdshader" id="1_hyk8p"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iuonh"]
+shader = ExtResource("1_hyk8p")
+shader_parameter/background_dark = false
+
+[sub_resource type="Sky" id="Sky_k2fmo"]
+sky_material = SubResource("ShaderMaterial_iuonh")
+
+[sub_resource type="Environment" id="Environment_l3cfh"]
+background_mode = 2
+sky = SubResource("Sky_k2fmo")
+
+[node name="Main" type="Node3D" unique_id=897972912]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1689994723]
+environment = SubResource("Environment_l3cfh")
