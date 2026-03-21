@@ -48,10 +48,18 @@ var overlayBar
 var allLevels = []
 var levels = []
 var movingWalls = []
+var isUnlimited = false
 
 func _ready() -> void:
 	allLevels = [easyLevels, mediumlevels, hardlevels]
-	levels = allLevels[Globals.difficulty - 1]
+	if Globals.difficulty == 4:
+		isUnlimited = true
+		levels = []
+		for i in range(8):
+			levels.append(generateUnlimitedLevel(i))
+	else:
+		levels = allLevels[Globals.difficulty - 1]
+		
 	overlay = overlayTimeLeftBar.instantiate()
 	get_tree().root.add_child(overlay)
 	var vbox = overlay.get_node("CanvasLayer/HBoxContainer/VBoxContainer")
@@ -60,6 +68,15 @@ func _ready() -> void:
 	
 	applyLevel(currentLevel, )
 	spawnTileGrid(0, 0, bottomTiles, mapTileInstance)
+
+func generateUnlimitedLevel(index: int) -> Array:
+	var t = float(index)
+	var duration = maxf(30.0 - t * 1.5, 12.0)
+	var fallSpeed = minf(2.5  + t * 0.65, 15.0)
+	var spawnInterval = maxf(7.0 - t * 0.4, 0.8)
+	var emptySlots = maxi(48 - index * 3, 4)
+	var wallInterval = 999.0 if index < 2 else maxf(12.0 - t * 0.6, 3.0)
+	return [duration, fallSpeed, spawnInterval, emptySlots, wallInterval]
 
 func applyLevel(index: int):
 	var cfg = levels[index]
@@ -79,6 +96,8 @@ func currentCFG() -> Array:
 	return levels[currentLevel]
 
 func shrinkMap() -> void:
+	if mapSize <= 8:
+		return
 	var offset = (mapSize - 1) * spacing * 0.5
 	for child in bottomTiles.get_children():
 		var row = roundi((child.position.x + offset) / spacing)
@@ -112,10 +131,12 @@ func fadeOutAndFree(node: Node3D, duration: float) -> void:
 func advanceLevel() -> void:
 	currentLevel += 1
 	if currentLevel >= levels.size():
-		win()
-		return
-	else:
-		spawnFallingGrid()
+		if isUnlimited:
+			levels.append(generateUnlimitedLevel(currentLevel))
+		else: 
+			win()
+			return
+	spawnFallingGrid()
 	shrinkMap()
 	applyLevel(currentLevel)
 	

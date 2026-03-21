@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://b6coslynunakn" path="res://assets/ceiling.png" id="3_y12mh"]
 [ext_resource type="Texture2D" uid="uid://bq7p6m3qhlyiq" path="res://assets/angyCeiling.png" id="4_0nlh8"]
 [ext_resource type="Texture2D" uid="uid://dpuiq5iqaqlxc" path="res://assets/SUPERangyCeiling.png" id="5_bkiby"]
+[ext_resource type="Texture2D" uid="uid://drqrtts7js20f" path="res://assets/endless.png" id="6_kfruo"]
 [ext_resource type="AudioStream" uid="uid://d0sfg7yvqqbm5" path="res://assets/sounds/flop.mp3" id="7_snb2d"]
 
 [node name="playUI" type="Node" unique_id=390501759]
@@ -66,6 +67,18 @@ theme_override_fonts/font = ExtResource("2_wr85a")
 theme_override_font_sizes/font_size = 24
 text = "Hard"
 icon = ExtResource("5_bkiby")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="difficulty4" type="Button" parent="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer" unique_id=446365363]
+custom_minimum_size = Vector2(150, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 24
+text = "Endless"
+icon = ExtResource("6_kfruo")
 flat = true
 icon_alignment = 1
 expand_icon = true
@@ -305,3 +318,5 @@ stream = ExtResource("7_snb2d")
 [connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty2" to="." method="_on_difficulty_2_pressed"]
 [connection signal="mouse_entered" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty3" to="." method="_on_difficulty_3_mouse_entered"]
 [connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty3" to="." method="_on_difficulty_3_pressed"]
+[connection signal="mouse_entered" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty4" to="." method="_on_difficulty_4_mouse_entered"]
+[connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty4" to="." method="_on_difficulty_4_pressed"]

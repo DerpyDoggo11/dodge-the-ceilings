@@ -7,12 +7,15 @@ const LERP_SPEED = 12.0
 @onready var difficulty1 = $CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty1
 @onready var difficulty2 = $CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty2
 @onready var difficulty3 = $CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty3
+@onready var difficulty4 = $CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty4
+
 var buttons = []
 var is_loading = false
 var buttonPlayedOnHover
 
 func _ready():
-	buttons = [difficulty1, difficulty2, difficulty3]
+	buttons = [difficulty1, difficulty2, difficulty3, difficulty4]
+	Globals.resetVars()
 
 func _process(delta):
 	
@@ -66,6 +69,8 @@ func _load_game(difficulty: int):
 		spinner.texture = preload("res://assets/angyCeiling.png")
 	elif difficulty == 3:
 		spinner.texture = preload("res://assets/SUPERangyCeiling.png")
+	elif difficulty == 4:
+		spinner.texture = preload("res://assets/endless.png")
 	spinner.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	spinner.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var spinner_size = Vector2(200, 200)
@@ -108,5 +113,5 @@ func _on_difficulty_2_pressed() -> void:
 	_load_game(2)
 func _on_difficulty_3_pressed() -> void:
 	_load_game(3)
-func _on_difficulty_3_mouse_entered() -> void:
-	pass
+func _on_difficulty_4_pressed() -> void:
+	_load_game(4)
