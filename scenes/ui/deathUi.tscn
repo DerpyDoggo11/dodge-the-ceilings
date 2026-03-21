@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://c8faj7lw3dpnu"]
 
 [ext_resource type="FontFile" uid="uid://rdlh2dallwka" path="res://assets/fonts/titleFont.ttf" id="1_ko5pc"]
+[ext_resource type="Script" uid="uid://gi8ooojrg4um" path="res://scenes/ui/deathUi.gd" id="1_vsvnq"]
+[ext_resource type="FontFile" uid="uid://uugkuwo8mt7f" path="res://assets/fonts/paragraphFont.otf" id="2_u1s2j"]
 
 [node name="DeathUI" type="Control" unique_id=1259036080]
 z_index = 10
 layout_mode = 3
 anchors_preset = 0
+script = ExtResource("1_vsvnq")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1785244772]
 layer = 5
@@ -33,3 +36,12 @@ theme_override_fonts/font = ExtResource("1_ko5pc")
 theme_override_font_sizes/font_size = 40
 text = "You Died :(("
 horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=437010043]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_u1s2j")
+theme_override_font_sizes/font_size = 37
+text = "you survived for 20 seconds"
+horizontal_alignment = 1
+
+[connection signal="ready" from="." to="." method="_on_ready"]

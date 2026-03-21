@@ -25,6 +25,7 @@ var camera_pitch = 0.0
 const JUMP_HOLD_FORCE = 3.0
 const JUMP_HOLD_MAX = 0.5
 var jump_hold_timer = 0.0
+var timeAliveAccumulator = 0.0
 var settingsOpen = false
 var settingsCanvas: CanvasLayer = null
 
@@ -42,6 +43,11 @@ func _physics_process(delta):
 	
 	if Globals.started == false:
 		return
+		
+	timeAliveAccumulator += delta
+	if timeAliveAccumulator >= 1.0:
+		timeAliveAccumulator -= 1.0
+		Globals.timeAlive += 1
 	
 	if global_position.y < -10:
 		die()
@@ -60,7 +66,11 @@ func _physics_process(delta):
 	var forward = Vector3(cam_basis.z.x, 0, cam_basis.z.z).normalized()
 	var right = Vector3(cam_basis.x.x, 0, cam_basis.x.z).normalized()
 	var movement_dir = (-forward * -input.y + right * input.x)
-
+	
+	if movement_dir.length() > 0.1:
+		if $Flop.playing == false:
+			$Flop.play()
+	
 	if is_dashing:
 		velocity.x = dash_direction.x * DASH_SPEED
 		velocity.z = dash_direction.z * DASH_SPEED
@@ -80,6 +90,7 @@ func _physics_process(delta):
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_speed
 		jump_hold_timer = JUMP_HOLD_MAX
+		$Jump.playing = true
 
 	if jump_hold_timer > 0.0:
 		if Input.is_action_pressed("jump"):
@@ -94,6 +105,8 @@ func _physics_process(delta):
 		is_dashing = true
 		dash_timer = DASH_DURATION
 		dash_cooldown_timer = DASH_COOLDOWN
+		$Dash.playing = true
+		$DashFlop.playing = true
 	
 	var target_height = DASH_HEIGHT if is_dashing else NORMAL_HEIGHT
 	var current_height = lerp(playerMesh.scale.y, target_height, delta * 15.0)

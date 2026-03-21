@@ -11,34 +11,37 @@ extends Node3D
 @export var spawnHeight = 30.0
 @export var emptySlotCount = 40
 
-# duration seconds, fall speed, spawn interval, empty slots
+# duration seconds, fall speed, ceiling spawn interval, empty slots, wall spawn interval
 @export var easyLevels = [
-	[20.0, 3.0, 5.0, 40],
-	[15.0, 4.5, 4.5, 32],
-	[15.0, 6.0, 3.0, 24],
+	[25.0, 2.5, 7.0, 48, 999.0],
+	[20.0, 3.0, 6.0, 40, 12.0],
+	[20.0, 4.0, 5.0, 32, 10.0],
 ]
 @export var mediumlevels = [
-	[20.0, 4.5, 3.5, 40],
-	[15.0, 4.5, 3, 32],
-	[15.0, 6.0, 2.0, 24],
-	[15.0, 8.0, 1.5, 16],
-	[15.0, 11.0, 1, 8],
+	[25.0, 3.0, 6.0, 44, 999.0],
+	[20.0, 3.5, 5.0, 36, 10.0],
+	[20.0, 4.5, 4.0, 28, 8.0],
+	[20.0, 6.0, 3.0, 20, 7.0],
+	[15.0, 8.0, 2.0, 14, 6.0],
 ]
 @export var hardlevels = [
-	[20.0, 4.5, 2.5, 40],
-	[15.0, 4.5, 1.5, 32],
-	[15.0, 6.0, 1.0, 24],
-	[15.0, 8.0, 1.0, 16],
-	[15.0, 11.0, 1.0, 8],
+	[20.0, 3.5, 4.5, 40, 10.0],
+	[20.0, 4.5, 3.5, 32, 7.0],
+	[15.0, 6.0, 2.5, 24, 6.0],
+	[15.0, 8.0, 2.0, 16, 5.0],
+	[15.0, 11.0, 1.5, 8,  4.0],
 ]
 
 
 @onready var bottomTiles = $BottomTiles
+@onready var movingCeilingSound = $MovingCeiling
+@onready var movingWallSound = $MovingWall
 
 var fallingGrids = []
 var spawnTimer = 0.0
 var levelTimer = 0.0
 var currentLevel = 0
+var wallSpawnTimer = 0.0
 var overlay
 var overlayLabel
 var overlayBar
@@ -61,8 +64,8 @@ func _ready() -> void:
 func applyLevel(index: int):
 	var cfg = levels[index]
 	var duration = cfg[0] as float
-	var spawnInterval = cfg[2] as float
 	spawnTimer = 0.0
+	wallSpawnTimer = 0.0
 	levelTimer = 0.0
 	
 	if overlayLabel:
@@ -113,7 +116,6 @@ func advanceLevel() -> void:
 		return
 	else:
 		spawnFallingGrid()
-		spawnWall()
 	shrinkMap()
 	applyLevel(currentLevel)
 	
@@ -171,6 +173,11 @@ func spawnFallingGrid():
 	var fallingParent = Node3D.new()
 	add_child(fallingParent)
 	fallingParent.position.y = spawnHeight
+	
+	var movingSound = movingCeilingSound.duplicate()
+	fallingParent.add_child(movingSound)
+	movingSound.play()
+	
 	spawnTileGrid(0, emptySlots, fallingParent, spikeyTileInstance)
 	fallingGrids.append(fallingParent)
 	fadeInGrid(fallingParent, 0.6)
@@ -235,6 +242,10 @@ func spawnWall() -> void:
 	var wallParent = Node3D.new()
 	add_child(wallParent)
 	
+	var movingSound = movingWallSound.duplicate()
+	wallParent.add_child(movingSound)
+	movingSound.play()
+	
 	var direction: Vector3
 	var tileRotation: float
 	match side:
@@ -267,12 +278,13 @@ func _process(delta: float) -> void:
 	var duration = cfg[0] as float
 	var fallSpeed = cfg[1] as float
 	var spawnInterval = cfg[2] as float
+	var wallInterval = cfg[4] as float
 	
 	levelTimer += delta
 	var timeLeft = maxf(duration - levelTimer, 0.0)
 	
 	if overlayLabel:
-		overlayLabel.text = "Level %d  —  %ds" % [currentLevel + 1, ceili(timeLeft)]
+		overlayLabel.text = "Level %d:  %ds" % [currentLevel + 1, ceili(timeLeft)]
 	if overlayBar:
 		overlayBar.value = timeLeft
 		
@@ -284,6 +296,11 @@ func _process(delta: float) -> void:
 	if spawnTimer >= spawnInterval:
 		spawnTimer = 0.0
 		spawnFallingGrid()
+		
+	wallSpawnTimer += delta
+	if wallSpawnTimer >= wallInterval:
+		wallSpawnTimer = 0.0
+		spawnWall()
 
 	for grid in fallingGrids.duplicate():
 		grid.position.y -= fallSpeed * delta
@@ -292,7 +309,7 @@ func _process(delta: float) -> void:
 			grid.queue_free()
 			fallingGrids.erase(grid)
 	
-	var wallSpeed = fallSpeed * 0.5
+	var wallSpeed = fallSpeed * 0.25
 	for wall in movingWalls.duplicate():
 		var w: Node3D = wall["node"]
 		if not is_instance_valid(w):

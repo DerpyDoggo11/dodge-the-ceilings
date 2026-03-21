@@ -9,6 +9,7 @@ const LERP_SPEED = 12.0
 @onready var difficulty3 = $CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty3
 var buttons = []
 var is_loading = false
+var buttonPlayedOnHover
 
 func _ready():
 	buttons = [difficulty1, difficulty2, difficulty3]
@@ -34,13 +35,20 @@ func _process(delta):
 		return
 	for button in buttons:
 		var target_x = HOVER_SCALE_X if button.is_hovered() else NORMAL_SCALE_X
+		if button.is_hovered():
+			if buttonPlayedOnHover != button:
+				buttonPlayedOnHover = button
+				$Hover.playing = true
 		button.custom_minimum_size.x = lerp(button.custom_minimum_size.x, target_x, delta * LERP_SPEED)
+
 func _load_game(difficulty: int):
 	if is_loading:
 		return
 	is_loading = true
 	Globals.difficulty = difficulty
- 
+	
+	$Select.playing = true
+	
 	var vp_size = get_viewport().get_visible_rect().size
  
 	var overlay = ColorRect.new()
