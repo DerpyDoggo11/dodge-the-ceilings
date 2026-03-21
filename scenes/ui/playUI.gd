@@ -14,6 +14,22 @@ func _ready():
 	buttons = [difficulty1, difficulty2, difficulty3]
 
 func _process(delta):
+	
+	# wonderful code ik :D - super lazy rn
+	$CanvasLayer/Label3.rotation += 0.005
+	$CanvasLayer/Label4.rotation += 0.01
+	$CanvasLayer/Label5.rotation += 0.01
+	$CanvasLayer/Label6.rotation += 0.01
+	$CanvasLayer/Label7.rotation += 0.01
+	$CanvasLayer/Label8.rotation += 0.01
+	$CanvasLayer/Label9.rotation += 0.005
+	$CanvasLayer/Label10.rotation += 0.005
+	$CanvasLayer/Label11.rotation += 0.01
+	$CanvasLayer/Label12.rotation += 0.01
+	$CanvasLayer/Label13.rotation += 0.01
+	$CanvasLayer/Label14.rotation += 0.01
+	$CanvasLayer/Label15.rotation += 0.01
+	
 	if is_loading:
 		return
 	for button in buttons:

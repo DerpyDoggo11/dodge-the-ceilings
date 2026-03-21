@@ -29,13 +29,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 25
 alignment = 1
 
-[node name="Label2" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=1945657088]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("1_2bjro")
-theme_override_font_sizes/font_size = 40
-text = "dodge the ceilings"
-horizontal_alignment = 1
-
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=1290435232]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -75,6 +68,230 @@ icon = ExtResource("5_bkiby")
 flat = true
 icon_alignment = 1
 expand_icon = true
+
+[node name="Label2" type="Label" parent="CanvasLayer" unique_id=1945657088]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -600.0
+offset_right = 600.0
+offset_bottom = 51.0
+grow_horizontal = 2
+pivot_offset = Vector2(600, 50)
+theme_override_fonts/font = ExtResource("1_2bjro")
+theme_override_font_sizes/font_size = 40
+text = "dodge the ceilings"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="CanvasLayer" unique_id=955036832]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 252.0
+offset_top = 584.0
+offset_right = 717.0
+offset_bottom = 635.0
+grow_horizontal = 2
+pivot_offset = Vector2(230, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "tip: remember to hydrate 
+(drink boba)"
+horizontal_alignment = 1
+
+[node name="Label4" type="Label" parent="CanvasLayer" unique_id=1144130831]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -597.0
+offset_top = 295.0
+offset_right = -357.0
+offset_bottom = 346.0
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "blegggg"
+horizontal_alignment = 1
+
+[node name="Label9" type="Label" parent="CanvasLayer" unique_id=1778137015]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -334.0
+offset_top = 206.99997
+offset_right = -94.0
+offset_bottom = 257.99997
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "watch out for ceilings!"
+horizontal_alignment = 1
+
+[node name="Label11" type="Label" parent="CanvasLayer" unique_id=255118631]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 204.0
+offset_top = 69.0
+offset_right = 444.0
+offset_bottom = 120.0
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "hav fun!"
+horizontal_alignment = 1
+
+[node name="Label12" type="Label" parent="CanvasLayer" unique_id=153465434]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -605.0
+offset_top = 464.0
+offset_right = -365.0
+offset_bottom = 515.0
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "e"
+horizontal_alignment = 1
+
+[node name="Label13" type="Label" parent="CanvasLayer" unique_id=778397493]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 285.0
+offset_top = 197.0
+offset_right = 525.0
+offset_bottom = 248.0
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "e"
+horizontal_alignment = 1
+
+[node name="Label10" type="Label" parent="CanvasLayer" unique_id=1831391762]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 30.0
+offset_top = 512.0
+offset_right = 270.0
+offset_bottom = 563.0
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "baby seal != ceiling
+baby seal = sea doggo
+ceiling = undefined"
+horizontal_alignment = 1
+
+[node name="Label7" type="Label" parent="CanvasLayer" unique_id=566604199]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 386.00006
+offset_top = 110.99997
+offset_right = 626.0
+offset_bottom = 161.99997
+grow_horizontal = 2
+rotation = 0.92676985
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "bleggggggg"
+horizontal_alignment = 1
+
+[node name="Label5" type="Label" parent="CanvasLayer" unique_id=2045780637]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -429.0
+offset_top = 491.99997
+offset_right = -189.0
+offset_bottom = 514.0
+grow_horizontal = 2
+rotation = 0.991347
+pivot_offset = Vector2(120, 10)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "fibsh"
+horizontal_alignment = 1
+
+[node name="Label6" type="Label" parent="CanvasLayer" unique_id=572799919]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 292.99994
+offset_top = 341.99997
+offset_right = 533.0
+offset_bottom = 364.0
+grow_horizontal = 2
+rotation = -0.7278023
+pivot_offset = Vector2(120, 10)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "fibsh"
+horizontal_alignment = 1
+
+[node name="Label8" type="Label" parent="CanvasLayer" unique_id=2003990516]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -562.0
+offset_top = 66.0
+offset_right = -321.99994
+offset_bottom = 88.00003
+grow_horizontal = 2
+rotation = 0.991347
+pivot_offset = Vector2(120, 10)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "good luck!"
+horizontal_alignment = 1
+
+[node name="Label14" type="Label" parent="CanvasLayer" unique_id=1420994563]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 84.35602
+offset_top = 878.27594
+offset_right = 324.35602
+offset_bottom = 929.27594
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "e"
+horizontal_alignment = 1
+
+[node name="Label15" type="Label" parent="CanvasLayer" unique_id=910712538]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -805.64404
+offset_top = 1145.2759
+offset_right = -565.64404
+offset_bottom = 1196.2759
+grow_horizontal = 2
+rotation = -0.46251225
+pivot_offset = Vector2(120, 25)
+theme_override_fonts/font = ExtResource("2_wr85a")
+theme_override_font_sizes/font_size = 20
+text = "e"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty1" to="." method="_on_difficulty_1_pressed"]
 [connection signal="pressed" from="CanvasLayer/HBoxContainer/VBoxContainer/VBoxContainer/difficulty2" to="." method="_on_difficulty_2_pressed"]

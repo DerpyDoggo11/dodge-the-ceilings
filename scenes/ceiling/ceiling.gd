@@ -1,9 +1,10 @@
 extends CharacterBody3D
 
+@export var settingsUI: PackedScene
+
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed = 5
 var jump_speed = 5
-var mouse_sensitivity = 0.002
 const FIRST_PERSON_LENGTH = 0.0
 const THIRD_PERSON_LENGTH = 3.5
 const ZOOM_SPEED = 10.0
@@ -21,6 +22,12 @@ var dash_direction = Vector3.ZERO
 var camera_yaw = 0.0
 var camera_pitch = 0.0
 
+const JUMP_HOLD_FORCE = 3.0
+const JUMP_HOLD_MAX = 0.5
+var jump_hold_timer = 0.0
+var settingsOpen = false
+var settingsCanvas: CanvasLayer = null
+
 @onready var cameraPivot = $CameraPivot
 @onready var springArm = $CameraPivot/SpringArm3D
 @onready var camera = $CameraPivot/SpringArm3D/Camera3D
@@ -35,6 +42,9 @@ func _physics_process(delta):
 	
 	if Globals.started == false:
 		return
+	
+	if global_position.y < -10:
+		die()
 	
 	velocity.y += -gravity * delta
 
@@ -59,13 +69,24 @@ func _physics_process(delta):
 		velocity.z = movement_dir.z * speed
 		
 	move_and_slide()
-
+	
+	if settingsOpen:
+		return
+		
 	if velocity.length() > 0.1:
 		var target_angle = atan2(velocity.x, velocity.z)
 		playerMesh.rotation.y = lerp_angle(playerMesh.rotation.y, target_angle, delta * 10.0)
-
+	
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_speed
+		jump_hold_timer = JUMP_HOLD_MAX
+
+	if jump_hold_timer > 0.0:
+		if Input.is_action_pressed("jump"):
+			velocity.y += JUMP_HOLD_FORCE * delta
+			jump_hold_timer -= delta
+		else:
+			jump_hold_timer = 0.0
 	
 	if Input.is_action_just_pressed("dash") and dash_cooldown_timer <= 0.0:
 		dash_direction = movement_dir if movement_dir.length() > 0.1 else -forward
@@ -80,7 +101,8 @@ func _physics_process(delta):
 
 	if collider.shape is CapsuleShape3D:
 		collider.shape.height = lerp(collider.shape.height, target_height * 2.0, delta * 15.0)
-
+	
+	
 	var target_length = THIRD_PERSON_LENGTH if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) else FIRST_PERSON_LENGTH
 	springArm.spring_length = lerp(springArm.spring_length, target_length, delta * ZOOM_SPEED)
 
@@ -93,22 +115,69 @@ func _input(event):
 		return
 		
 	if event.is_action_pressed("exit"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+		
+		if !settingsOpen:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			openSettings()
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			closeSettings()
+		return
+	
+	if settingsOpen:
+		return
+
+
+	if event is InputEventMouseButton and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var isThirdPerson = springArm.spring_length > 0.2
-		camera_yaw   -= event.relative.x * mouse_sensitivity
-		camera_pitch -= event.relative.y * mouse_sensitivity
-		camera_pitch  = clampf(camera_pitch, -deg_to_rad(90), deg_to_rad(90))
+		camera_yaw   -= event.relative.x * (Globals.sensitivity * 0.001)
+		camera_pitch -= event.relative.y * (Globals.sensitivity * 0.001)
+		camera_pitch  = clampf(camera_pitch, -deg_to_rad(80), deg_to_rad(80))
 
 		if isThirdPerson:
 			cameraPivot.rotation = Vector3(camera_pitch, camera_yaw - rotation.y, 0.0)
 		else:
 			rotation.y = camera_yaw
 			cameraPivot.rotation = Vector3(camera_pitch, 0.0, 0.0)
+			
+			
+func openSettings():
+	settingsOpen = true
+	if settingsCanvas != null:
+		return
 
+	settingsCanvas = CanvasLayer.new()
+	settingsCanvas.layer = 64
+	add_child(settingsCanvas)
 
+	var instance = settingsUI.instantiate()
+	instance.modulate.a = 0.0
+	settingsCanvas.add_child(instance)
+
+	var tween = settingsCanvas.create_tween()
+	tween.tween_property(instance, "modulate:a", 1.0, 0.25)
+	
+func closeSettings():
+	settingsOpen = false
+	if settingsCanvas == null:
+		return
+
+	var instance = settingsCanvas.get_child(0)
+	if not is_instance_valid(instance):
+		settingsCanvas.queue_free()
+		settingsCanvas = null
+		return
+
+	var tween = settingsCanvas.create_tween()
+	tween.tween_property(instance, "modulate:a", 0.0, 0.2)
+	tween.tween_callback(func():
+		settingsCanvas.queue_free()
+		settingsCanvas = null
+	)
+	
 func die():
 	if Globals.started == false:
 		return

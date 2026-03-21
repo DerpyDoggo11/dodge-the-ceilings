@@ -5,11 +5,13 @@
 [ext_resource type="PackedScene" uid="uid://c8nf7qd4iy40q" path="res://scenes/ui/overlay.tscn" id="2_ph54e"]
 [ext_resource type="PackedScene" uid="uid://cwk1cb0qqrtqs" path="res://scenes/ui/winUi.tscn" id="3_fcby6"]
 [ext_resource type="PackedScene" uid="uid://6f3f0ps3mumr" path="res://scenes/map/mapTileInstance.tscn" id="3_ph54e"]
+[ext_resource type="PackedScene" uid="uid://0viyibcaw7ch" path="res://scenes/wallTile/wallTileInstance.tscn" id="4_jcaow"]
 
 [node name="Map" type="Node3D" unique_id=1687480935]
 script = ExtResource("1_sxf4j")
 overlayTimeLeftBar = ExtResource("2_ph54e")
 winScreenInstance = ExtResource("3_fcby6")
+wallTileInstance = ExtResource("4_jcaow")
 spikeyTileInstance = ExtResource("2_a2pkv")
 mapTileInstance = ExtResource("3_ph54e")
 

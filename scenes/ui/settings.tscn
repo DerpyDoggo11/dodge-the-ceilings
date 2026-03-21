@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://bbrsimso5acx7"]
+
+[ext_resource type="Script" uid="uid://dk3vrcmdqevod" path="res://scenes/ui/settings.gd" id="1_7pacj"]
+[ext_resource type="FontFile" uid="uid://uugkuwo8mt7f" path="res://assets/fonts/paragraphFont.otf" id="1_8wfqe"]
+
+[node name="Settings" type="Control" unique_id=709196353]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_7pacj")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=274992094]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=577412454]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -201.0
+offset_right = 201.0
+offset_bottom = 138.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer" unique_id=867510634]
+z_index = 3
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=1965088285]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_8wfqe")
+text = "
+Sensitivity"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=811139877]
+z_index = 1
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/center_grabber = 1
+theme_override_constants/tick_offset = -8
+min_value = 1.0
+max_value = 10.0
+value = 2.0
+rounded = true
+tick_count = 10
+
+[node name="Label2" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer" unique_id=664135104]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_8wfqe")
+text = "
+
+
+ESC to close"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1677196810]
+offset_left = 390.0
+offset_right = 812.0
+offset_bottom = 147.0
+mouse_filter = 2
+color = Color(0.29586658, 0.2958665, 0.29586637, 1)
+
+[connection signal="value_changed" from="CanvasLayer/HBoxContainer/VBoxContainer/HSlider" to="." method="_on_h_slider_value_changed"]

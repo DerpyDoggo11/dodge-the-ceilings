@@ -2,6 +2,7 @@ extends Node3D
 
 @export var overlayTimeLeftBar: PackedScene
 @export var winScreenInstance: PackedScene
+@export var wallTileInstance: PackedScene
 @export var spikeyTileInstance: PackedScene
 @export var mapTileInstance: PackedScene
 @export var mapSize = 20
@@ -43,8 +44,8 @@ var overlayLabel
 var overlayBar
 var allLevels = []
 var levels = []
+var movingWalls = []
 
-# TODO: Make tilemap size shrink every few seconds (remove edges from main tilemap), Make sideway/angled tiles moving to the opposite side
 func _ready() -> void:
 	allLevels = [easyLevels, mediumlevels, hardlevels]
 	levels = allLevels[Globals.difficulty - 1]
@@ -80,8 +81,30 @@ func shrinkMap() -> void:
 		var row = roundi((child.position.x + offset) / spacing)
 		var col = roundi((child.position.z + offset) / spacing)
 		if row == 0 or row == mapSize - 1 or col == 0 or col == mapSize - 1:
-			child.queue_free()
+			fadeOutAndFree(child, 0.6)
 	mapSize -= 2
+	
+func fadeOutAndFree(node: Node3D, duration: float) -> void:
+	var meshes: Array = []
+	collectMeshes(node, meshes)
+	if meshes.is_empty():
+		node.queue_free()
+		return
+
+	var tween = create_tween()
+	tween.set_parallel(true)
+	for mesh in meshes:
+		var mat: Material = mesh.material_override
+		if mat == null:
+			continue
+		mat = mat.duplicate()
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mesh.material_override = mat
+		tween.tween_property(mat, "albedo_color:a", 0.0, duration)
+
+	var seq = create_tween()
+	seq.tween_interval(duration)
+	seq.tween_callback(node.queue_free)
  
 func advanceLevel() -> void:
 	currentLevel += 1
@@ -90,6 +113,7 @@ func advanceLevel() -> void:
 		return
 	else:
 		spawnFallingGrid()
+		spawnWall()
 	shrinkMap()
 	applyLevel(currentLevel)
 	
@@ -149,11 +173,92 @@ func spawnFallingGrid():
 	fallingParent.position.y = spawnHeight
 	spawnTileGrid(0, emptySlots, fallingParent, spikeyTileInstance)
 	fallingGrids.append(fallingParent)
+	fadeInGrid(fallingParent, 0.6)
+	
+func collectMeshes(node: Node, result: Array) -> void:
+	if node is MeshInstance3D:
+		result.append(node)
+	for child in node.get_children():
+		collectMeshes(child, result)
 
+func fadeInGrid(parent: Node3D, duration: float) -> void:
+	var meshes: Array = []
+	collectMeshes(parent, meshes)
+	if meshes.is_empty():
+		return
+		
+	var tween = create_tween()
+	tween.set_parallel(true)
+	for mesh in meshes:
+		var mat: Material = mesh.material_override
+		if mat == null:
+			continue
+		mat = mat.duplicate()
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		
+		var base: Color = mat.albedo_color
+		var h = fmod(base.h + randf_range(-0.01, 0.01), 1.0)
+		var s = clampf(base.s + randf_range(-0.01, 0.05), 0.0, 1.0)
+		var v = clampf(base.v + randf_range(-0.05, 0.05), 0.0, 1.0)
+		mat.albedo_color = Color.from_hsv(h, s, v, 0.0)
+
+		mesh.material_override = mat
+		tween.tween_property(mat, "albedo_color:a", 1.0, duration)
+	
 func removeTiles(parent: Node3D):
 	for child in parent.get_children():
 		child.queue_free()
-
+		
+func spawnWall() -> void:
+	var side = randi() % 4
+	var wallHeight = 5
+	var offset = (mapSize - 1) * spacing * 0.5
+	
+	var cfg = currentCFG()
+	var ceilingEmptySlots = cfg[3] as int
+	var wallEmptySlots = ceilingEmptySlots
+	
+	var allPositions = []
+	for i in range(mapSize):
+		for y in range (wallHeight):
+			allPositions.append(Vector2i(i, y))
+	allPositions.shuffle()
+	var emptySet = {}
+	for k in range(min(wallEmptySlots, allPositions.size())):
+		emptySet[allPositions[k]] = true
+		
+	var safeCol = randi() % mapSize
+	for y in range(wallHeight):
+		emptySet[Vector2i(safeCol, y)] = true
+	
+	
+	var wallParent = Node3D.new()
+	add_child(wallParent)
+	
+	var direction: Vector3
+	var tileRotation: float
+	match side:
+		0: direction = Vector3( 0, 0,  1); tileRotation = 0.0
+		1: direction = Vector3( 0, 0, -1); tileRotation = PI
+		2: direction = Vector3( 1, 0,  0); tileRotation = -PI * 0.5
+		3: direction = Vector3(-1, 0,  0); tileRotation = PI * 0.5
+		
+	for i in range(mapSize):
+		for y in range(wallHeight):
+			if emptySet.get(Vector2i(i, y), false):
+				continue
+			var instance = wallTileInstance.instantiate()
+			wallParent.add_child(instance)
+			instance.rotation.y = tileRotation
+			match side:
+				0: instance.position = Vector3(i * spacing - offset, y * spacing + spacing * 0.5, -offset - spacing)
+				1: instance.position = Vector3(i * spacing - offset, y * spacing + spacing * 0.5,  offset + spacing)
+				2: instance.position = Vector3(-offset - spacing, y * spacing + spacing * 0.5, i * spacing - offset)
+				3: instance.position = Vector3( offset + spacing, y * spacing + spacing * 0.5, i * spacing - offset)
+		
+	movingWalls.append({"node": wallParent, "dir": direction})
+	fadeInGrid(wallParent, 0.6)
+	
 func _process(delta: float) -> void:
 	if Globals.started == false:
 		return
@@ -186,6 +291,19 @@ func _process(delta: float) -> void:
 			grid.position.y = 0.0
 			grid.queue_free()
 			fallingGrids.erase(grid)
+	
+	var wallSpeed = fallSpeed * 0.5
+	for wall in movingWalls.duplicate():
+		var w: Node3D = wall["node"]
+		if not is_instance_valid(w):
+			movingWalls.erase(wall)
+			continue
+		w.position += wall["dir"] * wallSpeed * delta
+		var p = w.position
+		var limit = (mapSize + 2) * spacing
+		if abs(p.x) > limit or abs(p.z) > limit:
+			w.queue_free()
+			movingWalls.erase(wall)
 
 func _exit_tree() -> void:
 	if overlay and is_instance_valid(overlay):
